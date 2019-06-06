@@ -40,6 +40,7 @@ Promise.all(promises).then(responses => {
     pagePromises.push(axios.get(link.url));
   });
   console.log('Waiting for Individual Pages to resolve... ');
+
   Promise.all(pagePromises.map(reflect)).then(pageResponses =>{
     console.log('Received each page... ');
     const successfulPromises = pageResponses.filter(pageResponse => pageResponse.status === 'success')
@@ -50,7 +51,17 @@ Promise.all(promises).then(responses => {
         const textArray = captionText.split('Address: ');
         if(textArray.length > 1) {
           console.log(textArray[1]);
-      }
+          const url = $('meta[property="og:url"]').attr('content');
+          console.log(url);
+          let name = ""
+          if(url.split('/minnesota/').length > 1){
+            name = url.split('/minnesota/')[1];
+            name = name.slice(0,-3);
+            const names = name.split('-');
+            name = names.map(thing => {return thing.charAt(0).toUpperCase() + thing.slice(1)}).join(" ");
+            console.log(name);
+          }
+        }
     });
   }).catch(err => {
     console.log(err);

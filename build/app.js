@@ -48,6 +48,16 @@ Promise.all(promises).then(function (responses) {
             var textArray = captionText.split('Address: ');
             if (textArray.length > 1) {
                 console.log(textArray[1]);
+                var url_1 = $('meta[property="og:url"]').attr('content');
+                console.log(url_1);
+                var name_1 = "";
+                if (url_1.split('/minnesota/').length > 1) {
+                    name_1 = url_1.split('/minnesota/')[1];
+                    name_1 = name_1.slice(0, -3);
+                    var names = name_1.split('-');
+                    name_1 = names.map(function (thing) { return thing.charAt(0).toUpperCase() + thing.slice(1); }).join(" ");
+                    console.log(name_1);
+                }
             }
         });
     }).catch(function (err) {
