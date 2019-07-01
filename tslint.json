@@ -12,6 +12,7 @@
         "typedef":false,
         "array-type": false,
         "arrow-parens": false,
-        "no-console": false
+        "no-console": false,
+        "interface-name": false
     }
 }
