@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <title>OnlyInYourStateMap</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            body: 100%
+        }
+
+        #map {
+            height: 100%;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        // Initialize and add the map
+        function initMap() {
+            // // The location of Uluru
+            // var uluru = { lat: -25.344, lng: 131.036 };
+            // // The map, centered at Uluru
+            var map = new google.maps.Map(
+                document.getElementById('map'), { zoom: 2, center: { lat: 46.7296, lng: 94.6859 } });
+            // // The marker, positioned at Uluru
+            // var marker = new google.maps.Marker({ position: uluru, map: map });
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", "./finalLocationOutput.txt", false);
+            rawFile.onreadystatechange = function () {
+                if (rawFile.readyState === 4) {
+                    if (rawFile.status === 200 || rawFile.status == 0) {
+                        var allText = rawFile.responseText;
+                        var parsedData = JSON.parse(allText);
+                        parsedData.forEach(location => {
+                            var htmlContent = `<h4>${location.Name}</h4><p>${location.Label}</p><a target="_blank" href="${location.Url}">OnlyInYourState</a>`;
+                            var infoWindow = new google.maps.InfoWindow({
+                                content: htmlContent
+                            });
+                            var marker = new google.maps.Marker({
+                                title: location.Name,
+                                position: { lat: location.Latitude, lng: location.Longitude },
+                                map: map
+                            });
+                            marker.addListener('click', function () {
+                                infoWindow.open(map, marker);
+                            });
+                        });
+                    }
+                }
+            }
+            rawFile.send(null);
+        }
+        initMap();
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDvrc4RK6_wBBn33uA3C9hiBC0NvwVlOg0&callback=initMap">
+        </script>
+</body>
+
+</html>

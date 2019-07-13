@@ -30,13 +30,19 @@ const getGeoInformation = (parsedData: Location[]) => {
         addresses.push(hereLocation);
       }
     });
-    console.log(addresses);
+    const serializedArray = JSON.stringify(addresses);
+    fs.writeFile("./finalLocationOutput.txt", serializedArray, (err) => {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("File created!");
+    });
   });
 };
 
 const transformResponse = (res: any) => {
   if (res.data.Response.View.length && res.data.Response.View[0].Result.length) {
-    return {...res.data.Response.View[0].Result[0].Location.Address, Name: res.Name, Url: res.Url};
+    return {...res.data.Response.View[0].Result[0].Location.Address, ...res.data.Response.View[0].Result[0].Location.DisplayPosition, Name: res.Name, Url: res.Url};
   }
   return null;
 };
@@ -59,4 +65,6 @@ interface HereLocation {
   Street: string;
   HouseNumber: string;
   PostalCode: string;
+  Latitude: number;
+  Longitude: number;
 }

@@ -39,12 +39,18 @@ var getGeoInformation = function (parsedData) {
                 addresses.push(hereLocation);
             }
         });
-        console.log(addresses);
+        var serializedArray = JSON.stringify(addresses);
+        fs_1.default.writeFile("./finalLocationOutput.txt", serializedArray, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+            console.log("File created!");
+        });
     });
 };
 var transformResponse = function (res) {
     if (res.data.Response.View.length && res.data.Response.View[0].Result.length) {
-        return __assign({}, res.data.Response.View[0].Result[0].Location.Address, { Name: res.Name, Url: res.Url });
+        return __assign({}, res.data.Response.View[0].Result[0].Location.Address, res.data.Response.View[0].Result[0].Location.DisplayPosition, { Name: res.Name, Url: res.Url });
     }
     return null;
 };
