@@ -10,7 +10,7 @@ When first looking at the website, their URL structure is based on incrementing 
 
 But now fetching 1495 individual pages comes with its own challenges. I kept running to Socket Closed or Timeout errors when I was attempting to grab each individual page. It didn't take long for me to realize that it was probably my issue with Axios and OnlyInYourState that I was sending 1495 requests almost simultaneously. I needed a way to limit the amount of requests I was sending at a time, wait for those to respond, then process and send more until I had all of the information I needed. Luckily, I found a [great medium article](https://medium.com/@matthew_1129/axios-js-maximum-concurrent-requests-b15045eb69d0) about doing just that. I was able to successfully limit the number of requests to 10 and every 20 ms, check for responses process and send another if able. 
 
-Parsing the individual attraction was difficult because there isn't a stand set for those uploading these attractions of formatting (or if they even have to have an address). I could parse the entire page with a regular expression, but I didn't think that would be the most accurate and could result in false positives. After manually going through some pages, I found some hope: some pages have "Address: address here." in the captions of images or the in the text on the page. A starting point! With a little more digging I found some variations of that like: "is located at", "address is", or "You'll find it at". Using those phrases, I was able to establish some sort of location for the attractions. I was only able to match on 363 attractions (24%) out of the total 1495. I ended up saving those locations as a json in a text file 
+Parsing the individual attraction was difficult because there isn't a standard set for those uploading these attractions of formatting (or if they even have to have an address). I could parse the entire page with a regular expression, but I didn't think that would be the most accurate and could result in false positives. After manually going through some pages, I found some hope: some pages have "Address: address here." in the captions of images or the in the text on the page. A starting point! With a little more digging I found some variations of that like: "is located at", "address is", or "You'll find it at". Using those phrases, I was able to establish some sort of location for the attractions. I was only able to match on 363 attractions (24%) out of the total 1495. I ended up saving those locations as a json in a text file 
 
 ## App.ts
 
@@ -38,6 +38,20 @@ Out of the 363, only 310 returned valid locations from HERE. Which turned my run
 
 Using the the Google Maps API, I read in each object from the text file and create a marker, with an info window on the map. A fun part about this is that Google has switched up their developer APIs because I only had one call per day for free. Not wanting to have to only get one chance a day, I was able to generate the objects and map without calling Google API until I was sure they were correct. Then I was surprised that I had plots all over the map. 15 outside of North America, and 40 within North America but not in Minnesota, that means that all in total 255 of the attractions actually made it to their correct locations in Minnesota.. an eye popping 17%.
 
-## Where it could have gone wrong
+## Other ways it could have gone wrong
 
-``` // TODO ```
+1. Lists of places in an article.
+
+   I came across multiple articles that had lists of places to try (Ex: Top 5 breakfasts places in MN). These articles had a list of places to see, but then they either had multiple address, to which I grabbed the first. Or they didn't give an address at all.
+
+2. Clickbait-y titles
+
+   If an article only had a descriptive title (Ex: Check out this underwater cave), rather than the actual name of it in the article title and metadata it would return a error when trying to find that location using the HERE mappings.
+
+3. Only getting street address
+
+   Some of the addresses I was able to grab, the regular expression I used, only grabbed the address and not the city / state. I believe this to be the reason I had so many locations show up outside North America. When searching for locations using the HERE API, I took the first response, and didn't parse the rest to see if there were more accurate locations.
+
+4. User error
+
+   Edge cases, bad programming, I missed something simple, it's all possible.
