@@ -18,6 +18,6 @@
     "cheerio": "^1.0.0-rc.3",
     "fs": "0.0.1-security",
     "typescript": "^3.5.1",
-    "lodash": ">=4.17.13"
+    "lodash": ">=4.17.19"
   }
 }
