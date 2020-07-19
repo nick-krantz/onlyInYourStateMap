@@ -2,9 +2,17 @@
 
 [OnlyInYourState](https://www.onlyinyourstate.com) is a website that curates unique things to do in your respective state. Things to do range from nature, attractions, dining and random activities. Whenever I would clicking through Minnesota, I would just have to guess at where things were. A limitation of the website is there isn't a map or being able to sort by distance from a zip code. Those features would make it easy to find things to do based on your location or how far you'd want to commit to traveling. 
 
-So I set out to make one, from the information I could gather directly from the website. I have always wanted to dabble in web scrapping but never really had a reason to do so, luckily for me, this would be that time. Each state has pages of articles that theoretically I should be able write a Node application to grab one by one, parse the data on the page, pull addresses and then plot to a map. 
+So I set out to make one, from the information I could gather directly from the website. I have always wanted to dabble in web scraping but never really had a reason to do so, luckily for me, this would be that time. Each state has pages of articles that theoretically I should be able write a Node application to grab one by one, parse the data on the page, pull addresses and then plot to a map. 
 
-## WebScrapper.ts
+
+## Contents
+- [WebScraper.ts](#WebScraper.ts)
+- [App.ts](#App.ts)
+- [index.html](#index.html)
+- [Error Causes](#Errors)
+- [Images](#Images)
+
+## WebScraper.ts
 
 When first looking at the website, their URL structure is based on incrementing the page number like: ```www.onlyinyourstate.com/states/minnesota/page/2/```, which makes it easy to grab each page of attractions. In total, Minnesota has 31 pages of attractions. Once I have the html of each page, I need to parse that to grab each link to the attraction. By inspecting a page, I can see that each attraction use an article tag and directly inside of it, there is an anchor tag with a link to the attraction page and a title for that attraction. So using [Axios](https://github.com/axios/axios), I am able to first grab each of the 31 pages. In order to parse the html that was returned I found [Cheerio](https://github.com/cheeriojs/cheerio), which is an implementation of jQuery for Node. For all 31 pages, that returned 1495 articles, which is an impressive number. 
 
@@ -14,7 +22,7 @@ Parsing the individual attraction was difficult because there isn't a standard s
 
 ## App.ts
 
-I wanted to verify that the addresses from webscraping would resolve into actual locations, using [HERE](https://developer.here.com/) geocoding. I could query those locations and retrieve valid street addresses and latitude and longitude in order to plot these points on a map. At this point each location was an object like so:
+I wanted to verify that the addresses from web scraping would resolve into actual locations, using [HERE](https://developer.here.com/) geocoding. I could query those locations and retrieve valid street addresses and latitude and longitude in order to plot these points on a map. At this point each location was an object like so:
 
 ```javascript
 interface HereLocation {
@@ -38,7 +46,7 @@ Out of the 363, only 310 returned valid locations from HERE. Which turned my run
 
 Using the the Google Maps API, I read in each object from the text file and create a marker, with an info window on the map. A fun part about this is that Google has switched up their developer APIs because I only had one call per day for free. Not wanting to have to only get one chance a day, I was able to generate the objects and map without calling Google API until I was sure they were correct. Then I was surprised that I had plots all over the map. 15 outside of North America, and 40 within North America but not in Minnesota, that means that all in total 255 of the attractions actually made it to their correct locations in Minnesota.. an eye popping 17%.
 
-## Other ways it could have gone wrong
+## Errors
 
 1. Lists of places in an article.
 
@@ -55,3 +63,16 @@ Using the the Google Maps API, I read in each object from the text file and crea
 4. User error
 
    Edge cases, bad programming, I missed something simple, it's all possible.
+
+## Images
+Read out from web scraper after completion.  
+![Final Stats](https://github.com/krantni/onlyInYourStateMap/blob/master/images/finalStats.png?raw=true)  
+
+What interacting with a marker looks like. OnlyInYourState link takes you back to the original article on their website.  
+![Marker Information](https://github.com/krantni/onlyInYourStateMap/blob/master/images/MarkerInformation.PNG?raw=true)
+
+A look at the map of Minnesota!  
+![Minnesota Map](https://github.com/krantni/onlyInYourStateMap/blob/master/images/Minnesota.PNG?raw=true)
+
+A look at the world map, because some of destination lookups resulted in some wacky locations.    
+![World Map](https://github.com/krantni/onlyInYourStateMap/blob/master/images/worldMap.PNG?raw=true)
